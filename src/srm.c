@@ -26,19 +26,19 @@ void srm_list()
   FILE *meta = fopen(METADATA_FILE, "r");
   if (!meta)
   {
-    perror("No deleted files found.");
+    perror(COLOR_YELLOW "No deleted files found." COLOR_RESET);
     return;
   }
 
   char stored_new_path[512], stored_original_path[512];
 
-  printf("Deleted Files:\n");
+  printf(COLOR_BLUE "Deleted Files:\n" COLOR_RESET);
   printf("-----------------------------\n");
 
   while (fscanf(meta, "%s %s", stored_new_path, stored_original_path) == 2)
   {
-    printf("Original: %s\n", stored_original_path);
-    printf("Stored as: %s\n", stored_new_path);
+    printf(COLOR_GREEN "Original: %s\n" COLOR_RESET, stored_original_path);
+    printf(COLOR_YELLOW "Stored as: %s\n" COLOR_RESET, stored_new_path);
     printf("-----------------------------\n");
   }
 
@@ -50,7 +50,7 @@ void srm_restore(const char *filename)
   FILE *meta = fopen(METADATA_FILE, "r");
   if (!meta)
   {
-    perror("Error opening metadata file");
+    perror(COLOR_RED "Error opening metadata file" COLOR_RESET);
     return;
   }
 
@@ -58,7 +58,7 @@ void srm_restore(const char *filename)
   FILE *temp = fopen(temp_file, "w");
   if (!temp)
   {
-    perror("Error creating temp metadata file");
+    perror(COLOR_RED "Error creating temp metadata file" COLOR_RESET);
     fclose(meta);
     return;
   }
@@ -80,7 +80,7 @@ void srm_restore(const char *filename)
       // Move the file back
       if (rename(stored_new_path, stored_original_path) == 0)
       {
-        printf("Restored '%s' to '%s'\n", filename, stored_original_path);
+        printf(COLOR_BLUE "Restored '%s' to '%s'\n" COLOR_RESET, filename, stored_original_path);
         restored = 1;
         continue; // Skip writing this entry back to metadata
       }
@@ -102,7 +102,7 @@ void srm_restore(const char *filename)
 
   if (!restored)
   {
-    printf("File '%s' not found in /recycle/\n", filename);
+    printf(COLOR_RED "File '%s' not found in /recycle/\n" COLOR_RESET, filename);
   }
 }
 
@@ -150,7 +150,7 @@ void srm_purge()
   DIR *dir = opendir(RECYCLE_DIR);
   if (!dir)
   {
-    perror("Error opening /recycle/");
+    perror(COLOR_RED "Error opening /recycle/" COLOR_RESET);
     return;
   }
 
@@ -171,11 +171,11 @@ void srm_purge()
     // Remove the file
     if (remove(filepath) != 0)
     {
-      perror("Error deleting file");
+      perror(COLOR_RED "Error deleting file" COLOR_RESET);
     }
     else
     {
-      printf("Deleted: %s\n", filepath);
+      printf(COLOR_YELLOW "Deleted: %s\n" COLOR_RESET, filepath);
     }
   }
 
@@ -184,10 +184,10 @@ void srm_purge()
   // Remove the metadata file
   if (remove(METADATA_FILE) == 0)
   {
-    printf("Deleted metadata file.\n");
+    printf(COLOR_YELLOW "Deleted metadata file.\n" COLOR_RESET);
   }
 
-  printf("Recycle bin purged successfully.\n");
+  printf(COLOR_GREEN "Recycle bin purged successfully.\n" COLOR_RESET);
 }
 
 /**
