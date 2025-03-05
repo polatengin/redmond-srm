@@ -21,8 +21,26 @@ void generate_random_prefix(char *buffer, size_t length)
 
 void srm_list()
 {
-  printf("Listing files in %s\n", RECYCLE_DIR);
-  // TODO: Implement file listing
+  FILE *meta = fopen(METADATA_FILE, "r");
+  if (!meta)
+  {
+    perror("No deleted files found.");
+    return;
+  }
+
+  char stored_new_path[512], stored_original_path[512];
+
+  printf("Deleted Files:\n");
+  printf("-----------------------------\n");
+
+  while (fscanf(meta, "%s %s", stored_new_path, stored_original_path) == 2)
+  {
+    printf("Original: %s\n", stored_original_path);
+    printf("Stored as: %s\n", stored_new_path);
+    printf("-----------------------------\n");
+  }
+
+  fclose(meta);
 }
 
 void srm_restore(const char *filename)
