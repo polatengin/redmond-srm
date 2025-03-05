@@ -1,10 +1,12 @@
+#include <dirent.h>
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include <unistd.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <time.h>
 #include "srm.h"
 
 #define RECYCLE_DIR "/recycle/"
@@ -145,8 +147,47 @@ void srm_restore_all()
 
 void srm_purge()
 {
-  printf("Permanently deleting all files in %s\n", RECYCLE_DIR);
-  // TODO: Implement purge logic
+  DIR *dir = opendir(RECYCLE_DIR);
+  if (!dir)
+  {
+    perror("Error opening /recycle/");
+    return;
+  }
+
+  struct dirent *entry;
+  char filepath[512];
+
+  while ((entry = readdir(dir)) != NULL)
+  {
+    // Skip "." and ".." directories
+    if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
+    {
+      continue;
+    }
+
+    // Construct full file path
+    snprintf(filepath, sizeof(filepath), "%s%s", RECYCLE_DIR, entry->d_name);
+
+    // Remove the file
+    if (remove(filepath) != 0)
+    {
+      perror("Error deleting file");
+    }
+    else
+    {
+      printf("Deleted: %s\n", filepath);
+    }
+  }
+
+  closedir(dir);
+
+  // Remove the metadata file
+  if (remove(METADATA_FILE) == 0)
+  {
+    printf("Deleted metadata file.\n");
+  }
+
+  printf("Recycle bin purged successfully.\n");
 }
 
 /**
