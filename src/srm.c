@@ -12,9 +12,6 @@
 #define RECYCLE_DIR "/recycle/"
 #define METADATA_FILE "/recycle/.metadata"
 
-/**
- * Generates a random prefix for the file.
- */
 void generate_random_prefix(char *buffer, size_t length)
 {
   srand(time(NULL));
@@ -190,9 +187,6 @@ void srm_purge()
   printf(COLOR_GREEN "Recycle bin purged successfully.\n" COLOR_RESET);
 }
 
-/**
- * Moves a file or folder to the recycle directory.
- */
 void srm_move_to_recycle(const char *path)
 {
   struct stat path_stat;
