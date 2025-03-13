@@ -8,6 +8,10 @@
 #define COLOR_YELLOW  "\033[33m"  // Warnings
 #define COLOR_BLUE    "\033[34m"  // Info
 
+void log_action(const char *action, const char *file);
+char* get_log_filename();
+void update_symlink();
+
 void srm_move_to_recycle(const char *path);
 void srm_list();
 void srm_restore(const char *filename);

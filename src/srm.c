@@ -1,3 +1,5 @@
+#define _POSIX_C_SOURCE 200809L
+
 #include <dirent.h>
 #include <errno.h>
 #include <stdio.h>
@@ -10,12 +12,49 @@
 #include "srm.h"
 
 #define RECYCLE_DIR "/recycle/"
+
 #define METADATA_FILE "/recycle/.metadata"
+
+#define LOG_DIR "/var/log/"
+#define LOG_SYMLINK "/var/log/srm.log"
 
 void generate_random_prefix(char *buffer, size_t length)
 {
   srand(time(NULL));
   snprintf(buffer, length, "%08x", rand());
+}
+
+char* get_log_filename() {
+  static char log_filename[256];
+  time_t now = time(NULL);
+  struct tm *tm_info = localtime(&now);
+
+  snprintf(log_filename, sizeof(log_filename), "%ssrm-%04d-%02d.log", LOG_DIR, tm_info->tm_year + 1900, tm_info->tm_mon + 1);
+  return log_filename;
+}
+
+void update_symlink() {
+  char *latest_log = get_log_filename();
+
+  remove(LOG_SYMLINK);
+
+  symlink(latest_log, LOG_SYMLINK);
+}
+
+void log_action(const char *action, const char *file) {
+  char *log_filename = get_log_filename();
+  FILE *log = fopen(log_filename, "a");
+
+  if (!log) return;
+
+  time_t now = time(NULL);
+  char *timestamp = ctime(&now);
+  timestamp[strlen(timestamp) - 1] = '\0';
+
+  fprintf(log, "[%s] %s: %s\n", timestamp, action, file);
+  fclose(log);
+
+  update_symlink();
 }
 
 void srm_list()
