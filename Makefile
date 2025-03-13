@@ -1,14 +1,16 @@
-CC = gcc
-CFLAGS = -Wall -Wextra -std=c11
-
 SRCS = ./src/main.c ./src/srm.c
-OBJS = $(SRCS:.c=.o)
-TARGET = srm
+OBJS = $(patsubst ./src/%.c,/tmp/%.o,$(SRCS))
 
-all: $(TARGET)
+all: setup clean srm
 
-$(TARGET): $(OBJS)
-	$(CC) $(CFLAGS) -o $(TARGET) $(OBJS)
+setup:
+	mkdir -p ./dist
 
 clean:
-	rm -f $(OBJS) $(TARGET)
+	rm -rf $(OBJS) ./dist/srm
+
+/tmp/%.o: ./src/%.c
+	gcc -Wall -Wextra -std=c11 -c $< -o $@
+
+srm: $(OBJS)
+	gcc -Wall -Wextra -std=c11 -o ./dist/srm $(OBJS)
