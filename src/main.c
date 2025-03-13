@@ -5,7 +5,7 @@
 
 void print_usage()
 {
-  printf("Usage: srm [options] <file/folder>\n");
+  printf("Usage: srm [options] <file/folder> [file/folder] [file/folder] ...\n");
   printf("Options:\n");
   printf("  --list           List deleted files\n");
   printf("  --restore <file> Restore a deleted file\n");
@@ -44,7 +44,9 @@ int main(int argc, char *argv[])
   }
   else
   {
-    srm_move_to_recycle(argv[1]);
+    for (int i = 1; i < argc; i++) {
+      srm_move_to_recycle(argv[i]);
+    }
   }
 
   return 0;
