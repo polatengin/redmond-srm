@@ -194,7 +194,7 @@ void srm_move_to_recycle(const char *path)
   // Check if file/folder exists
   if (stat(path, &path_stat) != 0)
   {
-    perror("Error: File does not exist");
+    perror(COLOR_YELLOW "Error: File does not exist" COLOR_RESET);
     return;
   }
 
@@ -203,7 +203,7 @@ void srm_move_to_recycle(const char *path)
   {
     if (mkdir(RECYCLE_DIR, 0777) != 0)
     {
-      perror("Error creating /recycle/ directory");
+      perror(COLOR_RED "Error creating /recycle/ directory" COLOR_RESET);
       return;
     }
   }
@@ -223,7 +223,7 @@ void srm_move_to_recycle(const char *path)
   // Move the file
   if (rename(path, new_path) != 0)
   {
-    perror("Error moving file");
+    perror(COLOR_RED "Error moving file" COLOR_RESET);
     return;
   }
 
@@ -236,8 +236,8 @@ void srm_move_to_recycle(const char *path)
   }
   else
   {
-    perror("Error writing metadata");
+    perror(COLOR_RED "Error writing metadata" COLOR_RESET);
   }
 
-  printf("Moved '%s' to '%s'\n", path, new_path);
+  printf(COLOR_GREEN "Moved '%s' to '%s'\n" COLOR_RESET, path, new_path);
 }
