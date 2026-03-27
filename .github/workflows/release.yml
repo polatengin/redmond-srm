@@ -57,6 +57,7 @@ jobs:
       - name: Trigger sync pipeline in polatengin/redmond
         uses: actions/github-script@v8
         with:
+          github-token: ${{ secrets.CROSS_REPO_PAT }}
           script: |
             await github.rest.actions.createWorkflowDispatch({
               owner: 'polatengin',
